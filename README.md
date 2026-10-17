@@ -2,7 +2,15 @@
 
 **Safe Stay. Better Tomorrow.** A database-backed hostel operations platform with a responsive Next.js website and role-specific portals, a FastAPI service, and PostgreSQL persistence.
 
-## Browser mein online dekhein
+## Browser mein dekhein — GitHub Codespaces
+
+[![Open E-11 in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/mazharmechtro9-blip/e11-hostel-management-system?quickstart=1)
+
+Button kholein aur **Create codespace** par click karein. Setup khud chalega. Tayyar hone par **Open in Browser** dabayein; terminal commands ya local installation ki zaroorat nahi. Demo login: `owner@e11.demo`, password `E11Demo!2026`.
+
+GitHub personal accounts include a monthly Codespaces allowance without payment details, subject to account eligibility and remaining quota. This opens a temporary development preview tied to your GitHub session, not permanent public hosting. See [Codespaces preview](docs/CODESPACES_PREVIEW.md).
+
+## Optional Render hosting (may require card verification)
 
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/mazharmechtro9-blip/e11-hostel-management-system)
 
