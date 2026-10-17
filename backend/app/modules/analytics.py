@@ -219,7 +219,9 @@ class AnalyticsService:
             )
         )
         invoices = self.db.scalars(
-            select(Invoice).where(Invoice.student_id == student.id).order_by(Invoice.month.desc())
+            select(Invoice)
+            .where(Invoice.student_id == student.id, ~Invoice.status.in_(["draft", "voided"]))
+            .order_by(Invoice.month.desc())
         ).all()
         payments = self.db.scalars(
             select(Payment)

@@ -33,6 +33,7 @@ import { api } from "@/lib/api";
 import { date, money, number, rows, text, type Row } from "@/lib/utils";
 import { Badge, Empty, ErrorState, Loading } from "@/components/ui/primitives";
 import { usePortal } from "./portal-app";
+import { StudentDashboard } from "./student-dashboard";
 import { OwnerDashboard } from "./owner-dashboard";
 export type DashboardData = {
   metrics: Record<string, number>;
@@ -104,14 +105,14 @@ export function RevenueChart({
             dataKey="month"
             axisLine={false}
             tickLine={false}
-            tick={{ fontSize: 11, fill: "#8190a5" }}
+            tick={{ fontSize: 11, fill: "#5b6e87" }}
             dy={8}
           />
           <YAxis
             tickFormatter={(v) => `${v / 1000}k`}
             axisLine={false}
             tickLine={false}
-            tick={{ fontSize: 11, fill: "#8190a5" }}
+            tick={{ fontSize: 11, fill: "#5b6e87" }}
             width={40}
           />
           <Tooltip
@@ -156,6 +157,7 @@ export function Dashboard() {
     return <ErrorState error={query.error} retry={() => query.refetch()} />;
   const d = query.data;
   if (role === "owner") return <OwnerDashboard data={d} />;
+  if (role === "student") return <StudentDashboard data={d} />;
   const m = d.metrics;
   const student = role === "student";
   const operational = role === "warden" || role === "assistant";

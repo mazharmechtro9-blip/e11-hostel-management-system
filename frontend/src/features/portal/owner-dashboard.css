@@ -660,3 +660,23 @@
     font-size: 10px;
   }
 }
+
+.premium-shell .command-context,
+.premium-shell .command-eyebrow,
+.premium-shell .command-heading p,
+.premium-shell .command-date,
+.premium-shell .command-panel header p,
+.premium-shell .command-chart-controls > div > span,
+.premium-shell .command-donut-legend > span,
+.premium-shell .command-table th,
+.premium-shell .command-activity p,
+.premium-shell .owner-command small,
+.premium-shell .command-donut > div > span {
+  color: #506987;
+}
+.premium-shell .command-green {
+  color: #11794d !important;
+}
+.premium-shell .command-all-clear {
+  color: #216f51;
+}

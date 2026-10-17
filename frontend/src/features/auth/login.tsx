@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -109,20 +110,18 @@ export function LoginPage() {
             Everything that makes hostel life feel a little more like home, in
             one thoughtful place.
           </p>
-          <div className="login-visual">
-            <div className="login-building">
-              {[1, 2, 3, 4].map((f) => (
-                <div key={f}>
-                  {[1, 2, 3, 4, 5, 6].map((w) => (
-                    <span key={w} className={(f + w) % 3 === 0 ? "lit" : ""} />
-                  ))}
-                </div>
-              ))}
-              <footer>E-11 HOSTEL</footer>
-            </div>
-            <span className="visual-orbit" />
-            <span className="visual-orbit second" />
-          </div>
+          <figure className="login-photo">
+            <Image
+              src="/photos/building.png"
+              width={800}
+              height={440}
+              alt="Architectural photo placeholder; not the actual property"
+              priority
+            />
+            <figcaption>
+              Architectural photo placeholder · Not the actual property
+            </figcaption>
+          </figure>
           <div className="login-trust">
             <ShieldCheck size={20} />
             <span>Secure access. A better everyday experience.</span>

@@ -69,7 +69,7 @@ export function GalleryPage() {
         <div className="pub-gallery-notice">
           <ImageIcon size={22} />
           <div>
-            <strong>Every image on this page is a concept illustration.</strong>
+            <strong>These are illustrative photo placeholders.</strong>
             <p>
               These are not photographs of the actual hostel. Layouts, finishes,
               and amenities must be confirmed with our team.
@@ -98,11 +98,11 @@ export function GalleryPage() {
                 width={1000}
                 height={820}
                 sizes="(max-width: 640px) 100vw, 50vw"
-                src="/illustrations/hostel-concept.svg"
-                alt="Building and landscaping concept illustration"
+                src="/photos/building.png"
+                alt="Architectural photo placeholder; not an actual property photograph"
               />
               <figcaption>
-                <span>CONCEPT ILLUSTRATION</span>
+                <span>PHOTO PLACEHOLDER</span>
                 <strong>A place to come home to.</strong>
                 <p>
                   Architectural visual direction · Not a property photograph
@@ -116,11 +116,11 @@ export function GalleryPage() {
                 width={1000}
                 height={820}
                 sizes="(max-width: 640px) 100vw, 50vw"
-                src="/illustrations/room-concept.svg"
-                alt="Furnished shared room concept illustration"
+                src="/photos/room-3.jpg"
+                alt="Bedroom photo placeholder; not an actual property photograph"
               />
               <figcaption>
-                <span>CONCEPT ILLUSTRATION</span>
+                <span>PHOTO PLACEHOLDER</span>
                 <strong>Make room for possibilities.</strong>
                 <p>Room visual direction · Actual layouts may vary</p>
               </figcaption>
@@ -225,11 +225,11 @@ export function AboutPage() {
               width={1000}
               height={820}
               sizes="(max-width: 640px) 100vw, 50vw"
-              src="/illustrations/hostel-concept.svg"
-              alt="E-11 architectural concept illustration, not an actual photograph"
+              src="/photos/building.png"
+              alt="Architectural photo placeholder, not an actual E-11 photograph"
             />
             <span className="pub-image-label">
-              Property concept illustration
+              Illustrative photo placeholder
             </span>
           </div>
         </div>
@@ -524,8 +524,8 @@ export function LegalPage({ type }: { type: "privacy" | "terms" }) {
             </p>
             <h2>Property images</h2>
             <p>
-              All current building and room visuals are labeled concept
-              illustrations. They are not actual photographs or a guarantee of
+              All current building and room visuals are labelled photo
+              placeholders. They are not actual photographs or a guarantee of
               exact layouts, furnishings, facilities, or finishes.
             </p>
             <h2>Hostel rules and conduct</h2>

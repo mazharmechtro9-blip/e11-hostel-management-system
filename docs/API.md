@@ -77,3 +77,18 @@ List endpoints generally return `{items, total}`. Monetary amounts are exact who
 | GET | `/health` | Health |
 
 The fixed role policy and ownership boundaries are described in `PERMISSIONS.md`. Publishing an endpoint does not grant public access; authorization runs in the backend dependencies/services. No real merchant webhook or live payment-provider endpoint is implemented.
+
+## Visual floor map
+
+`GET /api/v1/floor-map` is available to owner, warden and assistant roles; students
+receive 403. It returns the existing room/bed data with `map_status` on each room
+and bed. Only owners receive `billing_status` and `outstanding` on occupied beds.
+Operational staff receive `available`, `occupied` or `unavailable` classifications,
+without balances or settlement classifications.
+
+Owner states: `available` (green), `paid` (red), `pending` (yellow), `unverified`
+(purple), `unavailable` (grey). Financial status derives from all issued,
+non-voided invoices. A pending resident profile or no issued invoice is explicitly
+labelled unverified billing; this does not invent allocation approval or settlement
+records. Partly occupied rooms still show individual available beds and vacancy
+counts. The plan uses configured floors and rooms rather than fabricated blocks.

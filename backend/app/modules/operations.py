@@ -24,6 +24,7 @@ from app.database.models import (
     Booking,
     Complaint,
     Floor,
+    Invoice,
     MessCount,
     MessMenu,
     Notification,
@@ -629,6 +630,66 @@ def activate_student(
     record(db, user, "student.account_activated", "student", student.id)
     commit(db)
     return student_data(student, db)
+
+
+@router.get("/floor-map")
+def visual_floor_map(db: Session = Depends(get_db), user: User = Depends(operations)):
+    """Bed-level operational view; only owners receive financial classifications."""
+    active = {
+        a.bed_id: a for a in db.scalars(select(Allocation).where(Allocation.active.is_(True)))
+    }
+    balances = {}
+    if user.role == "owner":
+        balances = {
+            student_id: int(balance)
+            for student_id, balance in db.execute(
+                select(Invoice.student_id, func.sum(Invoice.total - Invoice.paid_amount))
+                .where(~Invoice.status.in_(["draft", "voided"]))
+                .group_by(Invoice.student_id)
+            )
+        }
+    items = []
+    for room in db.scalars(select(Room).order_by(Room.number)):
+        data = room_data(room, db)
+        for bed in data["beds"]:
+            allocation = active.get(bed["id"])
+            state = (
+                "unavailable"
+                if room.status != "available" or bed["status"] in {"maintenance", "inactive"}
+                else "available"
+            )
+            if allocation:
+                state = "occupied"
+                if user.role == "owner":
+                    balance = balances.get(allocation.student_id)
+                    state = (
+                        "unverified"
+                        if balance is None or allocation.student.status == "pending"
+                        else "pending"
+                        if balance > 0
+                        else "paid"
+                    )
+                    bed["outstanding"] = balance
+                    bed["billing_status"] = state
+            bed["map_status"] = state
+        states = {bed["map_status"] for bed in data["beds"]}
+        data["map_status"] = next(
+            (
+                state
+                for state in (
+                    "unavailable",
+                    "unverified",
+                    "pending",
+                    "paid",
+                    "occupied",
+                    "available",
+                )
+                if state in states
+            ),
+            "available",
+        )
+        items.append(data)
+    return {**listing(items), "financial_status_visible": user.role == "owner"}
 
 
 @router.get("/rooms")

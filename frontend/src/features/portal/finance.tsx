@@ -1,9 +1,12 @@
 "use client";
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   CheckCheck,
+  CircleDollarSign,
+  Clock3,
+  Wallet,
   Download,
   FileText,
   LoaderCircle,
@@ -23,6 +26,9 @@ import {
   Loading,
 } from "@/components/ui/primitives";
 import { PageHeading, usePortal } from "./portal-app";
+import { SummaryTile } from "./phase-components";
+import { type DashboardData } from "./dashboard";
+import "./phase-b.css";
 import { useToast } from "@/components/providers";
 export function Finance({ page }: { page: string }) {
   const { role, base } = usePortal();
@@ -47,9 +53,34 @@ export function Finance({ page }: { page: string }) {
     queryFn: () => api("/students?page_size=100"),
     enabled: owner,
   });
-  const inv = rows(invoices.data);
+  const overview = useQuery({
+    queryKey: ["dashboard"],
+    queryFn: () => api<DashboardData>("/dashboard"),
+  });
+  const pendingSummary = useQuery({
+    queryKey: ["payments", "pending-count"],
+    queryFn: () =>
+      api<{ total: number }>("/payments?status=pending&page_size=1"),
+  });
+  const receiptIntent = useSyncExternalStore(
+    subscribeReceiptLocation,
+    () => new URLSearchParams(window.location.search).get("receipt") === "1",
+    () => false,
+  );
+  const [shortcutDismissed, setShortcutDismissed] = useState(false);
+  const inv = rows(invoices.data).filter(
+    (i) => !student || !["draft", "voided"].includes(text(i.status)),
+  );
   const pay = rows(payments.data);
   const unpaid = inv.filter((r) => Number(r.balance) > 0);
+  const shortcutReady =
+    receiptIntent && !shortcutDismissed && !!invoices.data && !!payments.data;
+  const shortcutPayment = shortcutReady
+    ? pay.find((p) => p.status === "pending")
+    : undefined;
+  const uploadPayment = upload || shortcutPayment;
+  const showRecording =
+    recording || (shortcutReady && !shortcutPayment && unpaid.length > 0);
   const paid = pay
     .filter((r) => r.status === "verified")
     .reduce((sum, r) => sum + Number(r.amount || 0), 0);
@@ -59,6 +90,8 @@ export function Finance({ page }: { page: string }) {
       client.invalidateQueries({ queryKey: ["invoices"] }),
       client.invalidateQueries({ queryKey: ["payments"] }),
       client.invalidateQueries({ queryKey: ["dashboard"] }),
+      client.invalidateQueries({ queryKey: ["rooms"] }),
+      client.invalidateQueries({ queryKey: ["owner-payment-queue"] }),
     ]);
   };
   const createInvoice = async (v: Record<string, string>) => {
@@ -92,7 +125,7 @@ export function Finance({ page }: { page: string }) {
         ? "Outstanding dues"
         : "Payments";
   return (
-    <>
+    <div className="finance-workspace">
       <PageHeading
         eyebrow="CLEAR RECORDS. COMPLETE CONFIDENCE."
         title={heading}
@@ -136,19 +169,38 @@ export function Finance({ page }: { page: string }) {
           ))}
         </nav>
       )}
-      <div className="stats-inline finance-summary">
-        <section className="surface">
-          <span>Verified collections</span>
-          <strong>{money(paid)}</strong>
-        </section>
-        <section className="surface">
-          <span>Outstanding balance</span>
-          <strong>{money(outstanding)}</strong>
-        </section>
-        <section className="surface">
-          <span>Payments awaiting review</span>
-          <strong>{pay.filter((r) => r.status === "pending").length}</strong>
-        </section>
+      <div className="finance-metric-grid">
+        <SummaryTile
+          label="Verified collections"
+          value={
+            overview.data ? money(overview.data.metrics.collected) : money(paid)
+          }
+          detail="Verified payments · all time"
+          icon={CircleDollarSign}
+          tone="green"
+        />
+        <SummaryTile
+          label="Outstanding balance"
+          value={
+            overview.data
+              ? money(overview.data.metrics.outstanding)
+              : money(outstanding)
+          }
+          detail="Across issued invoices"
+          icon={Wallet}
+          tone="amber"
+        />
+        <SummaryTile
+          label="Awaiting verification"
+          value={
+            pendingSummary.data
+              ? String(pendingSummary.data.total)
+              : String(pay.filter((r) => r.status === "pending").length)
+          }
+          detail="Pending payment submissions"
+          icon={Clock3}
+          tone="purple"
+        />
       </div>
       <div className="inline-notice">
         <ShieldCheck size={17} /> A receipt is supporting information. Payments
@@ -173,7 +225,10 @@ export function Finance({ page }: { page: string }) {
               <div className="module-grid">
                 {inv.length ? (
                   inv.map((i) => (
-                    <article key={text(i.id)} className="surface module-card">
+                    <article
+                      key={text(i.id)}
+                      className="surface module-card finance-invoice-card"
+                    >
                       <div className="room-card-top">
                         <span>
                           <FileText size={23} />
@@ -426,10 +481,13 @@ export function Finance({ page }: { page: string }) {
           onClose={() => setCreating(false)}
         />
       )}{" "}
-      {recording && (
+      {showRecording && (
         <RecordPayment
           invoices={unpaid}
-          onClose={() => setRecording(false)}
+          onClose={() => {
+            setRecording(false);
+            setShortcutDismissed(true);
+          }}
           onSaved={async (payment) => {
             await refresh();
             toast(
@@ -439,10 +497,13 @@ export function Finance({ page }: { page: string }) {
           }}
         />
       )}
-      {upload && (
+      {uploadPayment && (
         <ReceiptUpload
-          payment={upload}
-          onClose={() => setUpload(null)}
+          payment={uploadPayment}
+          onClose={() => {
+            setUpload(null);
+            setShortcutDismissed(true);
+          }}
           onSaved={async () => {
             await refresh();
             toast(
@@ -500,8 +561,12 @@ export function Finance({ page }: { page: string }) {
           onClose={() => setVerification(null)}
         />
       )}
-    </>
+    </div>
   );
+}
+function subscribeReceiptLocation(callback: () => void) {
+  window.addEventListener("popstate", callback);
+  return () => window.removeEventListener("popstate", callback);
 }
 function RecordPayment({
   invoices,
@@ -628,8 +693,17 @@ function ReceiptUpload({
             {error}
           </div>
         )}
-        <label className="receipt-upload">
+        <label
+          className={`receipt-upload premium-receipt-upload ${file ? "receipt-selected" : ""}`}
+          onDragOver={(e) => e.preventDefault()}
+          onDrop={(e) => {
+            e.preventDefault();
+            setFile(e.dataTransfer.files[0] || null);
+          }}
+        >
           <UploadCloud size={30} />
+          <strong>{file ? file.name : "Drag & drop your receipt here"}</strong>
+          <span>or choose a file below</span>
           <p>PDF, PNG, or JPEG · Maximum 5 MB</p>
           <input
             aria-label="Receipt document"

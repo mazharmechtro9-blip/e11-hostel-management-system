@@ -239,6 +239,7 @@ export function RoomCards({ limit }: { limit?: number }) {
     return (
       <div
         className="pub-room-grid"
+        role="group"
         aria-label="Loading rooms"
         aria-busy="true"
       >

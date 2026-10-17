@@ -1,15 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  ArrowRight,
-  BedDouble,
-  Building2,
-  DoorOpen,
-  Footprints,
-  Plus,
-  ShieldCheck,
-} from "lucide-react";
+import { ArrowRight, BedDouble, Plus, ShieldCheck } from "lucide-react";
 import { api } from "@/lib/api";
 import { money, rows, text, type Row } from "@/lib/utils";
 import {
@@ -21,6 +13,7 @@ import {
   Loading,
 } from "@/components/ui/primitives";
 import { PageHeading, usePortal } from "./portal-app";
+import { VisualFloorMap, mapLabels } from "./floor-map";
 import { useToast } from "@/components/providers";
 export function Rooms({
   map = false,
@@ -37,8 +30,8 @@ export function Rooms({
   const [allocating, setAllocating] = useState(false);
   const [creating, setCreating] = useState(false);
   const q = useQuery({
-    queryKey: ["rooms"],
-    queryFn: () => api("/rooms?page_size=100"),
+    queryKey: map ? ["rooms", "floor-map"] : ["rooms"],
+    queryFn: () => api(map ? "/floor-map" : "/rooms?page_size=100"),
   });
   const f = useQuery({
     queryKey: ["floors"],
@@ -58,7 +51,6 @@ export function Rooms({
     floors = rows(f.data);
   const activeFloor = floor || text(floors[0]?.id, "");
   const visible = map ? rooms.filter((r) => r.floor_id === activeFloor) : rooms;
-  const currentFloor = floors.find((r) => r.id === activeFloor);
   const canManage = role === "owner" || role === "warden";
   const refresh = async () => {
     await Promise.all([
@@ -143,96 +135,14 @@ export function Rooms({
             </div>
           )}
           {map ? (
-            <>
-              <div className="floor-toolbar">
-                <div className="floor-tabs" aria-label="Choose floor">
-                  {floors.map((v) => (
-                    <button
-                      key={text(v.id)}
-                      className={activeFloor === v.id ? "active" : ""}
-                      onClick={() => setFloor(text(v.id))}
-                    >
-                      {text(v.name)}
-                    </button>
-                  ))}
-                </div>
-                <div className="floor-legend">
-                  <span>
-                    <i style={{ background: "#4bb586" }} />
-                    Vacant
-                  </span>
-                  <span>
-                    <i style={{ background: "#72a3e2" }} />
-                    Occupied
-                  </span>
-                  <span>
-                    <i style={{ background: "#d6a260" }} />
-                    Maintenance
-                  </span>
-                </div>
-              </div>
-              <section className="surface floor-plan">
-                <div className="floor-plan-header">
-                  <div>
-                    <h3>{text(currentFloor?.name, "Floor overview")}</h3>
-                    <p>
-                      {visible.length} rooms ·{" "}
-                      {visible.reduce(
-                        (sum, r) => sum + Number(r.available_beds || 0),
-                        0,
-                      )}{" "}
-                      beds available
-                    </p>
-                  </div>
-                  <span>
-                    <Building2 size={13} /> LIVE FLOOR PLAN
-                  </span>
-                </div>
-                <div className="floor-rooms">
-                  {visible.map((r) => (
-                    <button
-                      key={text(r.id)}
-                      aria-label={`Room ${text(r.number)}`}
-                      className="floor-room"
-                      onClick={() => setSelected(r)}
-                    >
-                      <strong>ROOM {text(r.number)}</strong>
-                      <small>
-                        {text(r.room_type)} · {money(r.monthly_price as number)}
-                      </small>
-                      <div className="bed-grid">
-                        {rows(r.beds).map((b) => (
-                          <span
-                            key={text(b.id)}
-                            className={`bed-icon ${b.status === "occupied" ? "occupied" : b.status === "maintenance" ? "maintenance" : ""}`}
-                            title={`Bed ${text(b.label)}: ${text(b.status)}`}
-                          >
-                            <BedDouble size={19} />
-                          </span>
-                        ))}
-                      </div>
-                      <small>
-                        {text(r.available_beds)} vacant / {text(r.capacity)}{" "}
-                        beds
-                      </small>
-                    </button>
-                  ))}
-                </div>
-                <div className="floor-corridor">
-                  <span>
-                    <Footprints size={16} /> STAIRCASE / ENTRY
-                  </span>
-                  <span>CENTRAL CORRIDOR</span>
-                  <span>
-                    EXIT <DoorOpen size={16} />
-                  </span>
-                </div>
-                <p className="floor-plan-note">
-                  Schematic layout · Select a room to view its beds and manage
-                  allocations.
-                </p>
-              </section>
-            </>
+            <VisualFloorMap
+              rooms={rooms}
+              floors={floors}
+              activeFloor={activeFloor}
+              onFloor={setFloor}
+              onRoom={setSelected}
+              financial={role === "owner"}
+            />
           ) : (
             <div className="room-cards">
               {visible.map((r) => (
@@ -282,6 +192,21 @@ export function Rooms({
           onClose={() => setSelected(null)}
         >
           <div className="dialog-body">
+            <div className="room-detail-overview">
+              <span>
+                <strong>{text(selectedCurrent.capacity)}</strong> Total beds
+              </span>
+              <span>
+                <strong>{text(selectedCurrent.available_beds)}</strong>{" "}
+                Available
+              </span>
+              <span>
+                <strong>
+                  {money(selectedCurrent.monthly_price as number)}
+                </strong>{" "}
+                Monthly / resident
+              </span>
+            </div>
             <div className="bed-detail-list">
               {rows(selectedCurrent.beds).map((b) => (
                 <div key={text(b.id)} className="bed-detail">
@@ -297,13 +222,27 @@ export function Rooms({
                       )}
                     </small>
                   </div>
-                  <Badge value={b.status} />
+                  <div className="room-bed-billing">
+                    <Badge value={b.status} />
+                    {Boolean(b.map_status) && (
+                      <small className={`map-text-${text(b.map_status)}`}>
+                        {mapLabels[text(b.map_status)]}
+                      </small>
+                    )}
+                    {role === "owner" && b.outstanding !== undefined && (
+                      <small>
+                        {b.outstanding === null
+                          ? "No issued invoice"
+                          : `${money(b.outstanding as number)} outstanding`}
+                      </small>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
             <div className="inline-notice">
-              <ShieldCheck size={16} /> Allocations use database constraints to
-              keep each bed and resident assignment unique.
+              <ShieldCheck size={16} /> Every bed has one active resident
+              assignment. Room availability updates after allocation.
             </div>
             {canManage && (
               <div className="dialog-actions">

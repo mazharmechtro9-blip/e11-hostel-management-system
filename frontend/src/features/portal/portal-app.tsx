@@ -12,6 +12,10 @@ import {
   Command,
   HelpCircle,
   LogOut,
+  LayoutDashboard,
+  Wallet,
+  MessagesSquare,
+  UserRound,
   Menu,
   PanelLeftClose,
   Search,
@@ -31,6 +35,7 @@ import { Finance } from "./finance";
 import { Operations } from "./operations";
 import { Administration } from "./administration";
 import { AIChat } from "./ai-chat";
+import "./module-theme.css";
 type PortalContext = { user: User; role: string; base: string };
 const Context = createContext<PortalContext | null>(null);
 export function usePortal() {
@@ -169,7 +174,7 @@ export function PortalApp({ role, page }: { role: string; page: string }) {
       value={{ user, role: actualRole, base: `/${actualRole}` }}
     >
       <div
-        className={`portal ${actualRole === "owner" ? "owner-shell" : ""} ${collapsed ? "portal-collapsed" : ""}`}
+        className={`portal ${"owner-shell premium-shell"} ${actualRole === "student" ? "student-shell" : ""} ${collapsed ? "portal-collapsed" : ""}`}
       >
         <a href="#main-content" className="skip-link">
           Skip to main content
@@ -340,6 +345,38 @@ export function PortalApp({ role, page }: { role: string; page: string }) {
               </>
             )}
           </main>
+          {actualRole === "student" && (
+            <nav
+              className="student-bottom-nav"
+              aria-label="Student quick navigation"
+            >
+              {[
+                { href: "/student", icon: LayoutDashboard, label: "Home" },
+                { href: "/student/my-room", icon: BedDouble, label: "Room" },
+                { href: "/student/payments", icon: Wallet, label: "Payments" },
+                {
+                  href: "/student/complaints",
+                  icon: MessagesSquare,
+                  label: "Tickets",
+                },
+                { href: "/student/profile", icon: UserRound, label: "Profile" },
+              ].map(({ href, icon: Icon, label }) => (
+                <Link
+                  className={
+                    (page === "dashboard" ? "/student" : `/student/${page}`) ===
+                    href
+                      ? "active"
+                      : ""
+                  }
+                  key={href}
+                  href={href}
+                >
+                  <Icon size={19} />
+                  <span>{label}</span>
+                </Link>
+              ))}
+            </nav>
+          )}
           <footer className="portal-footer">
             <span>
               © {new Date().getFullYear()} E-11 Hostel · Safe Stay. Better
