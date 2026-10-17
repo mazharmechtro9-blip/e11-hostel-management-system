@@ -1,0 +1,78 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="900"
+  height="610"
+  viewBox="0 0 900 610"
+  fill="none"
+>
+  <defs>
+    <linearGradient id="wall" x1="0" x2="900" y2="400">
+      <stop stop-color="#EAE7DD" />
+      <stop offset="1" stop-color="#F7F5EC" />
+    </linearGradient>
+    <linearGradient id="floor" x1="450" y1="350" x2="450" y2="610">
+      <stop stop-color="#D2BC9D" />
+      <stop offset="1" stop-color="#AA947B" />
+    </linearGradient>
+    <linearGradient id="blue" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#29557B" />
+      <stop offset="1" stop-color="#112C4B" />
+    </linearGradient>
+  </defs>
+  <path d="M0 0h900v403H0Z" fill="url(#wall)" />
+  <path d="M0 403h900v207H0Z" fill="url(#floor)" />
+  <path d="M0 0h114v403L0 480Z" fill="#D8D8D0" />
+  <path d="M900 0H786v403l114 77Z" fill="#DFDFD7" />
+  <path
+    d="M0 516h900M0 570h900M114 403 0 610M272 403 160 610M430 403 416 610M588 403l84 207M744 403l156 207"
+    stroke="#B6A18A"
+    stroke-width="2"
+  />
+  <rect x="357" y="68" width="220" height="215" rx="4" fill="#93B1BE" />
+  <rect x="368" y="79" width="198" height="193" fill="#CEE2E8" />
+  <path d="m368 228 51-70 47 40 51-89 49 70v93H368Z" fill="#A3B7B1" />
+  <path d="m368 247 76-44 61 24 61-39v84H368Z" fill="#78958A" />
+  <path d="M467 79v193M368 175h198" stroke="#F5F5ED" stroke-width="8" />
+  <path d="M328 47h42v251h-58ZM565 47h42l16 251h-58Z" fill="#D7CFBB" />
+  <path
+    d="M340 47v247M354 47v247M580 47v247M594 47l10 247"
+    stroke="#C4BBA4"
+    stroke-width="4"
+  />
+  <rect x="133" y="283" width="189" height="125" rx="11" fill="#9A866F" />
+  <path d="m147 359 168-1 62 162H99Z" fill="#FAF9F2" />
+  <path d="m113 436 223-1 41 85H99Z" fill="url(#blue)" />
+  <path d="M99 520h278v33H99Z" fill="#1B354E" />
+  <path d="M111 553v22M365 553v22" stroke="#645647" stroke-width="13" />
+  <rect x="155" y="334" width="64" height="52" rx="10" fill="#F2EFE4" />
+  <rect x="232" y="334" width="64" height="52" rx="10" fill="#E6E2D5" />
+  <path d="M116 453h227" stroke="#4D7697" stroke-width="3" />
+  <rect x="586" y="283" width="189" height="125" rx="11" fill="#9A866F" />
+  <path d="m593 359 168-1 40 162H523Z" fill="#FAF9F2" />
+  <path d="m549 436 235-1 17 85H523Z" fill="url(#blue)" />
+  <path d="M523 520h278v33H523Z" fill="#1B354E" />
+  <path d="M535 553v22M789 553v22" stroke="#645647" stroke-width="13" />
+  <rect x="605" y="334" width="64" height="52" rx="10" fill="#F2EFE4" />
+  <rect x="682" y="334" width="64" height="52" rx="10" fill="#E6E2D5" />
+  <path d="M543 453h243" stroke="#4D7697" stroke-width="3" />
+  <path d="M383 359h135v16H383Z" fill="#A38C70" />
+  <path d="M394 375v87M505 375v87" stroke="#897256" stroke-width="8" />
+  <rect x="420" y="306" width="49" height="34" rx="3" fill="#183A59" />
+  <path d="M415 342h59" stroke="#61788B" stroke-width="5" />
+  <path d="M450 340v18" stroke="#2F4860" stroke-width="6" />
+  <path d="M224 258v-75M678 258v-75" stroke="#A1967D" stroke-width="5" />
+  <path d="m189 184 14-45h43l15 45ZM644 184l14-45h43l15 45Z" fill="#DCCAAA" />
+  <rect x="66" y="91" width="49" height="102" fill="#D5C4A5" />
+  <rect x="74" y="99" width="33" height="86" fill="#FBF6E8" />
+  <path d="m77 170 13-36 13 36" stroke="#9EAA90" stroke-width="7" />
+  <text
+    x="25"
+    y="591"
+    fill="#493E35"
+    font-size="12"
+    font-family="Arial,sans-serif"
+    letter-spacing="1.5"
+  >
+    ROOM CONCEPT ILLUSTRATION · ACTUAL LAYOUTS MAY VARY
+  </text>
+</svg>

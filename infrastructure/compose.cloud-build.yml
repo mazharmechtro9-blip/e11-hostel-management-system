@@ -1,0 +1,13 @@
+# Optional build-time trust for cloud environments with an HTTPS egress proxy.
+# The public CA bundle is mounted only for dependency installation; TLS
+# verification stays enabled. Regular local Docker builds do not need this file.
+services:
+  backend:
+    build:
+      secrets: [build_ca]
+  frontend:
+    build:
+      secrets: [build_ca]
+secrets:
+  build_ca:
+    file: ${E11_BUILD_CA_FILE:-/etc/ssl/certs/ca-certificates.crt}

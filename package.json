@@ -1,0 +1,17 @@
+{
+  "name": "e11-hostel-quality",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Full-stack browser acceptance tests for the E-11 Hostel portal",
+  "scripts": {
+    "test:e2e": "playwright test",
+    "typecheck:e2e": "tsc --project tests/e2e/tsconfig.json",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:report": "playwright show-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.56.1",
+    "@types/node": "^22.18.0",
+    "typescript": "^5.9.3"
+  }
+}
