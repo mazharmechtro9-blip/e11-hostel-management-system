@@ -11,5 +11,8 @@ docker compose up -d --wait db redis
   .venv/bin/alembic upgrade head
   .venv/bin/python -m app.scripts.seed_demo
 )
+# A previous lifecycle invocation can leave a healthy server with the old
+# origin configuration. Restart only services recorded by our own helper.
+backend/.venv/bin/python scripts/dev.py stop
 backend/.venv/bin/python scripts/dev.py start
 echo 'E-11 Hostel is running. Use Open in Browser for the E-11 HOSTEL port (3000).'
