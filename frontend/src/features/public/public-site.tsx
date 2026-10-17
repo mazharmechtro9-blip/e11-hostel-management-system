@@ -22,7 +22,7 @@ export default function PublicSite({ page }: { page: string }) {
   const settings = usePublicSettings();
   const normalized = page === "" ? "home" : page;
   return (
-    <div className="pub-site">
+    <div className={`pub-site ${normalized === "home" ? "premium-home" : ""}`}>
       <Link className="pub-skip-link" href="#public-main">
         Skip to content
       </Link>

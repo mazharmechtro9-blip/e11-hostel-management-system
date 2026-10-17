@@ -191,6 +191,21 @@ export const roleLabel = (role: string) =>
 export function navigation(role: string) {
   return (rolePages[role] || []).map((id) => {
     const item = allNavigation.find((n) => n.id === id)!;
+    if (role === "owner")
+      return {
+        ...item,
+        label:
+          (
+            {
+              dashboard: "Dashboard",
+              "floor-map": "Visual floor map",
+              outstanding: "Pending dues",
+              transport: "Pick & drop",
+              staff: "Staff & roles",
+              settings: "Settings",
+            } as Record<string, string>
+          )[id] || item.label,
+      };
     if (role === "student")
       return {
         ...item,

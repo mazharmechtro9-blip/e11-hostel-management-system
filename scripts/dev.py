@@ -38,6 +38,11 @@ def main() -> None:
                     os.killpg(pid, signal.SIGTERM)
                 except ProcessLookupError:
                     pass
+                stopped = time.monotonic()
+                while request_ok(url):
+                    if time.monotonic() - stopped > 10:
+                        raise SystemExit(f"{name}: recorded service did not stop; inspect runtime/{name}.log")
+                    time.sleep(0.2)
                 pid_file.unlink()
             print(f"{name}: stopped recorded service")
         elif args.action == "status":

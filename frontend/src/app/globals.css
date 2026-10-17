@@ -1,4 +1,10 @@
 @import "tailwindcss";
+@font-face {
+  font-family: Inter;
+  src: url("/fonts/InterVariable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-display: swap;
+}
 @theme inline {
   --color-navy: #071a35;
   --color-blue: #1677ff;

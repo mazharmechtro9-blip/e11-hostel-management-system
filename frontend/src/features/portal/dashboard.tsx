@@ -33,6 +33,7 @@ import { api } from "@/lib/api";
 import { date, money, number, rows, text, type Row } from "@/lib/utils";
 import { Badge, Empty, ErrorState, Loading } from "@/components/ui/primitives";
 import { usePortal } from "./portal-app";
+import { OwnerDashboard } from "./owner-dashboard";
 export type DashboardData = {
   metrics: Record<string, number>;
   revenue: { month: string; revenue: number; expected: number }[];
@@ -74,10 +75,16 @@ export function MetricCard({
   );
 }
 const chartColors = ["#1677ff", "#19b586", "#f4b646", "#8a63da"];
-export function RevenueChart({ data }: { data: DashboardData["revenue"] }) {
+export function RevenueChart({
+  data,
+  height = 250,
+}: {
+  data: DashboardData["revenue"];
+  height?: number;
+}) {
   return (
     <div className="chart-box">
-      <ResponsiveContainer width="100%" height={250}>
+      <ResponsiveContainer width="100%" height={height}>
         <AreaChart
           data={data}
           margin={{ left: 0, right: 5, top: 15, bottom: 5 }}
@@ -148,6 +155,7 @@ export function Dashboard() {
   if (query.error)
     return <ErrorState error={query.error} retry={() => query.refetch()} />;
   const d = query.data;
+  if (role === "owner") return <OwnerDashboard data={d} />;
   const m = d.metrics;
   const student = role === "student";
   const operational = role === "warden" || role === "assistant";

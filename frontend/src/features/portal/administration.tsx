@@ -546,12 +546,20 @@ function HostelSettings({ website }: { website: boolean }) {
     await api("/settings", { method: "PUT", body: JSON.stringify(body) });
     await Promise.all([
       client.invalidateQueries({ queryKey: ["settings"] }),
-      client.invalidateQueries({ queryKey: ["public-settings"] }),
+      client.invalidateQueries({ queryKey: ["public", "settings"] }),
     ]);
     toast("Hostel settings saved. Your website will reflect these changes.");
   };
   const keys = website
-    ? ["about", "facilities", "booking_policy", "refund_policy", "house_rules"]
+    ? [
+        "about",
+        "facilities",
+        "booking_policy",
+        "refund_policy",
+        "house_rules",
+        "hero_image_url",
+        "room_image_urls",
+      ]
     : ["hostel_name", "tagline", "email", "phone", "address"];
   const labels: Record<string, string> = {
     hostel_name: "Hostel name",
@@ -564,6 +572,8 @@ function HostelSettings({ website }: { website: boolean }) {
     booking_policy: "Booking policy",
     refund_policy: "Refund policy",
     house_rules: "House rules",
+    hero_image_url: "Homepage photo URL (HTTPS)",
+    room_image_urls: "Room photo URLs (one per line, 2 through 6 seater)",
   };
   return q.isPending ? (
     <Loading />
@@ -625,12 +635,19 @@ function HostelSettings({ website }: { website: boolean }) {
                     "refund_policy",
                     "house_rules",
                     "address",
+                    "room_image_urls",
                   ].includes(key)
                 ? "textarea"
                 : "text") as "text" | "email" | "textarea",
             required: !website,
             description:
-              key === "facilities" ? "One facility per line." : undefined,
+              key === "facilities"
+                ? "One facility per line."
+                : key === "room_image_urls"
+                  ? "Five HTTPS photo URLs, in capacity order (2–6). Empty uses labelled placeholders."
+                  : key === "hero_image_url"
+                    ? "A public HTTPS photo URL. Empty uses the labelled architectural placeholder."
+                    : undefined,
           }))}
           defaults={Object.fromEntries(keys.map((k) => [k, value(k)]))}
           onSubmit={save}

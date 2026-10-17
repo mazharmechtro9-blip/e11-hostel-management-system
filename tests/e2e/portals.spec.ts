@@ -17,7 +17,7 @@ for (const role of ['owner', 'warden', 'assistant', 'student'] as Role[]) {
     await page.setViewportSize({ width: 390, height: 844 });
     await assertNoHorizontalOverflow(page);
     await page.getByRole('button', { name: 'Open navigation', exact: true }).click();
-    await expect(navigation.getByRole('link', { name: 'Overview', exact: true })).toBeVisible();
+    await expect(navigation.getByRole('link', { name: role === 'owner' ? 'Dashboard' : 'Overview', exact: true })).toBeVisible();
     await page.getByRole('button', { name: 'Close navigation', exact: true }).click({ position: { x: 380, y: 100 } });
     await expect(page.getByRole('button', { name: 'Open navigation', exact: true })).toBeVisible();
     await page.screenshot({ path: `test-results/${role}-mobile.png`, fullPage: true });

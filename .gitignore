@@ -12,6 +12,7 @@
 **/tsconfig.tsbuildinfo
 **/coverage/
 **/test-results/
+**/test-results-*/
 **/playwright-report/
 runtime/
 *.log

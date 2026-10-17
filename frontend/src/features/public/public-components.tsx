@@ -22,7 +22,8 @@ import {
   X,
 } from "lucide-react";
 import { money } from "@/lib/utils";
-import { usePublicRooms } from "./public-data";
+import { roomPhoto } from "./photo";
+import { usePublicRooms, usePublicSettings } from "./public-data";
 import type { PublicRoom, PublicSettings } from "./public-data";
 import { facilities } from "./public-copy";
 
@@ -78,7 +79,7 @@ export function Header({
       {settings?.demo_mode !== false && (
         <div className="pub-preview-bar">
           DEVELOPMENT PREVIEW <span>·</span> Demonstration property details and
-          concept illustrations
+          placeholder photography
         </div>
       )}
       <header className="pub-header">
@@ -168,6 +169,7 @@ export function RoomModal({
   room: PublicRoom;
   onClose: () => void;
 }) {
+  const settings = usePublicSettings();
   const dialog = useRef<HTMLDialogElement>(null);
   useEffect(() => {
     dialog.current?.showModal();
@@ -186,8 +188,9 @@ export function RoomModal({
           width={1000}
           height={820}
           sizes="(max-width: 640px) 100vw, 50vw"
-          src="/illustrations/room-concept.svg"
-          alt="Illustrated shared room concept, not an actual property photograph"
+          src={roomPhoto(room.capacity, settings.data)}
+          unoptimized
+          alt="Bedroom photograph placeholder; not an actual property photograph"
         />
         <div className="pub-dialog-body">
           <span className="pub-eyebrow">YOUR OWN CORNER OF ISLAMABAD</span>
@@ -230,6 +233,7 @@ export function RoomModal({
 
 export function RoomCards({ limit }: { limit?: number }) {
   const query = usePublicRooms();
+  const settings = usePublicSettings();
   const [selected, setSelected] = useState<PublicRoom | null>(null);
   if (query.isPending)
     return (
@@ -287,10 +291,11 @@ export function RoomCards({ limit }: { limit?: number }) {
                 width={1000}
                 height={820}
                 sizes="(max-width: 640px) 100vw, 50vw"
-                src="/illustrations/room-concept.svg"
-                alt="Shared room concept illustration; actual room layout may vary"
+                src={roomPhoto(room.capacity, settings.data)}
+                unoptimized
+                alt={`${room.name} photography placeholder; not an actual property photograph`}
               />
-              <span className="pub-image-label">Concept illustration</span>
+              <span className="pub-image-label">Photo placeholder</span>
               <span className="pub-room-capacity">
                 <BedDouble size={14} /> {room.capacity} sharing
               </span>
@@ -394,8 +399,8 @@ export function TourModal({ onClose }: { onClose: () => void }) {
       <h2>The real view is on its way.</h2>
       <p>
         A 360° property tour has not been uploaded yet. The website currently
-        uses clearly labeled concept illustrations. You can contact the team to
-        arrange an in-person visit.
+        uses clearly labeled placeholder photography. You can contact the team
+        to arrange an in-person visit.
       </p>
       <Link href="/contact" className="pub-button pub-button-primary">
         Plan a visit <ArrowRight size={16} />
@@ -511,7 +516,7 @@ export function Footer({ settings }: { settings?: PublicSettings }) {
         {settings?.demo_mode !== false && (
           <p className="pub-footer-demo">
             Development preview · Demonstration information · All property
-            images are labeled concept illustrations.
+            images are labeled placeholder photography.
           </p>
         )}
       </div>

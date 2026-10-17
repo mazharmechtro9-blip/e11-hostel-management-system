@@ -15,6 +15,8 @@ export interface PublicRoom {
 
 export interface PublicSettings {
   demo_mode?: boolean;
+  hero_image_url?: string;
+  room_image_urls?: string;
   hostel_name?: string;
   tagline?: string;
   email?: string;

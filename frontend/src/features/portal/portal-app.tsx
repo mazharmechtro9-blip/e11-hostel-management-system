@@ -168,7 +168,9 @@ export function PortalApp({ role, page }: { role: string; page: string }) {
     <Context.Provider
       value={{ user, role: actualRole, base: `/${actualRole}` }}
     >
-      <div className={`portal ${collapsed ? "portal-collapsed" : ""}`}>
+      <div
+        className={`portal ${actualRole === "owner" ? "owner-shell" : ""} ${collapsed ? "portal-collapsed" : ""}`}
+      >
         <a href="#main-content" className="skip-link">
           Skip to main content
         </a>

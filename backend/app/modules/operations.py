@@ -7,6 +7,7 @@ single transaction. Allocation invariants are also protected by database indexes
 from datetime import date
 from typing import Any, Literal
 from uuid import uuid4
+from urllib.parse import urlsplit
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
@@ -1011,6 +1012,8 @@ PUBLIC_SETTING_KEYS = {
     "about",
     "faq",
     "gallery",
+    "hero_image_url",
+    "room_image_urls",
     "house_rules",
 }
 
@@ -1038,6 +1041,28 @@ def get_settings(db: Session = Depends(get_db), user: User = Depends(owner)):
 def update_settings(payload: dict, db: Session = Depends(get_db), user: User = Depends(owner)):
     if not payload or set(payload) - PUBLIC_SETTING_KEYS:
         raise HTTPException(422, "Only documented public hostel settings may be updated")
+    for image_key in ("hero_image_url", "room_image_urls"):
+        if image_key not in payload:
+            continue
+        image_value = payload[image_key]
+        if not isinstance(image_value, str):
+            raise HTTPException(422, "Image URLs must be text")
+        urls = image_value.splitlines() if image_key == "room_image_urls" else [image_value]
+        if len(urls) > 5:
+            raise HTTPException(422, "Provide at most five room image URLs")
+        for url in urls:
+            if url.strip():
+                try:
+                    parsed = urlsplit(url.strip())
+                except ValueError as exc:
+                    raise HTTPException(422, "Invalid photo URL") from exc
+                if (
+                    parsed.scheme != "https"
+                    or not parsed.hostname
+                    or parsed.username
+                    or parsed.password
+                ):
+                    raise HTTPException(422, "Photo URLs must use HTTPS without credentials")
     hostel_fields = {"hostel_name", "tagline", "email", "phone", "address"}
     public_fields = PUBLIC_SETTING_KEYS - hostel_fields - {"payment_instructions"}
     updates: dict[str, Any] = {}
